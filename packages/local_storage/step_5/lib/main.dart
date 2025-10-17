@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:local_storage_1/step_5/counter.dart';
+import 'package:step_5/counter.dart';
 
 class PageFive extends StatefulWidget {
   const PageFive({Key? key}) : super(key: key);
