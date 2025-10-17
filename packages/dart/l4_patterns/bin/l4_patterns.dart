@@ -1,11 +1,13 @@
-sealed class Token {}
+sealed class Token {
+  const Token();
+}
 final class NumberToken extends Token {
   final int value;
-  const NumberToken(this.value);
+  const NumberToken(this.value) : super();
 }
 final class OpToken extends Token {
   final String op;
-  const OpToken(this.op);
+  const OpToken(this.op) : super();
 }
 
 (String, int) parse(String input) {
