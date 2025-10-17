@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:step_6/counter.dart';
+import 'package:local_storage_l7/counter.dart';
 
 class CounterAdapter extends TypeAdapter<CounterHive> {
   @override
