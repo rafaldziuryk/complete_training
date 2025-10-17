@@ -39,6 +39,15 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l5/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l5/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l5/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l6/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l6/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l6/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l7/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l7/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l7/build" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_0/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_0/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_0/build" />
@@ -60,6 +69,30 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l2_oop/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l2_oop/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l2_oop/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l3_collections/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l3_collections/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l3_collections/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l4_patterns/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l4_patterns/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dart/l4_patterns/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l1/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l1/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l1/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l2/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l2/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l2/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l3/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l3/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l3/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l4/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l4/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l4/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

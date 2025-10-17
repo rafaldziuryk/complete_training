@@ -2,16 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:sqflite/sqflite.dart';
 
-class PageThree extends StatefulWidget {
-  const PageThree({Key? key}) : super(key: key);
-
-  @override
-  PageThreeState createState() => PageThreeState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageThreeState extends State<PageThree> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L4',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   int _counter = 0;
 
   late final Box box;

@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 
-class PageZero extends StatefulWidget {
-  const PageZero({Key? key}) : super(key: key);
-
-  @override
-  PageZeroState createState() => PageZeroState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageZeroState extends State<PageZero> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L1',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   int _counter = 0;
 
   Future<void> _incrementCounter() async {

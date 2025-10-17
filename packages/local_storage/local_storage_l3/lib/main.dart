@@ -2,14 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:sqflite/sqflite.dart';
 
-class PageTwo extends StatefulWidget {
-  const PageTwo({Key? key}) : super(key: key);
-
-  @override
-  PageTwoState createState() => PageTwoState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageTwoState extends State<PageTwo> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L3',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   int _counter = 0;
 
   Database? database;
@@ -39,7 +58,7 @@ class PageTwoState extends State<PageTwo> {
   void initState() {
     super.initState();
     getDatabasesPath()
-        .then((value) => openDatabase(value + 'demo.db', version: 1, onCreate: (Database db, int version) async {
+        .then((value) => openDatabase('$value/demo.db', version: 1, onCreate: (Database db, int version) async {
               // When creating the db, create the table
               await db.execute('CREATE TABLE Counter (id INTEGER PRIMARY KEY, value INTEGER)');
             }))

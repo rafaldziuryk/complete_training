@@ -4,14 +4,33 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:local_storage_l6/counter.dart';
 
-class PageFive extends StatefulWidget {
-  const PageFive({Key? key}) : super(key: key);
-
-  @override
-  PageFiveState createState() => PageFiveState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageFiveState extends State<PageFive> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L6',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   int _counter = 0;
 
   late final Box box;

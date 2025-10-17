@@ -4,17 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'counter.dart';
-import 'counter_adapter.dart';
+import 'package:local_storage_l7/counter.dart';
+import 'package:local_storage_l7/counter_adapter.dart';
 
-class PageSix extends StatefulWidget {
-  const PageSix({Key? key}) : super(key: key);
-
-  @override
-  PageSixState createState() => PageSixState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageSixState extends State<PageSix> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L7',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   List<CounterHive> counter = [];
 
   late final Box<CounterHive> box;

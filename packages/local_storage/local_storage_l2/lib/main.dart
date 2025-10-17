@@ -2,14 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PageOne extends StatefulWidget {
-  const PageOne({Key? key}) : super(key: key);
-
-  @override
-  PageOneState createState() => PageOneState();
+void main() {
+  runApp(const MyApp());
 }
 
-class PageOneState extends State<PageOne> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Local Storage L2',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Page(),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  PageState createState() => PageState();
+}
+
+class PageState extends State<Page> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   int _counter = 0;
 
