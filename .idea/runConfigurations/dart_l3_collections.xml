@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration name="dart_l3_collections" type="DartCommandLineRunConfigurationType" factoryName="Dart">
-    <option name="filePath" value="/Users/rafaldziuryk/SupportStudioProjects/complete_training/packages/dart/l3_collections/bin/l3_collections.dart" />
-    <option name="workingDirectory" value="/Users/rafaldziuryk/SupportStudioProjects/complete_training" />
+  <configuration default="false" name="dart_l3_collections" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+    <option name="filePath" value="$PROJECT_DIR$/packages/dart/l3_collections/bin/l3_collections.dart" />
     <method v="2" />
   </configuration>
 </component>
