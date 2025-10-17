@@ -1,0 +1,55 @@
+---
+globs: *.dart
+alwaysApply: false
+---
+
+# Flutter Clean Architecture - Main Rule
+
+## 📋 IMPORTANT: This rule has been divided into focused components
+
+**This main rule file has been replaced with specific, focused rule files in the `flutter-clean-architecture/` directory.**
+
+### 🔄 Please use the specific rule files instead:
+
+1. **[folder-structure.mdc](flutter-clean-architecture/folder-structure.mdc)** - Folder structure and organization
+2. **[usecase-pattern.mdc](flutter-clean-architecture/usecase-pattern.mdc)** - UseCase pattern implementation (must use sealed UseCaseResult, not Either)
+3. **[bloc-sealed-classes.mdc](flutter-clean-architecture/bloc-sealed-classes.mdc)** - BLoC with sealed classes
+4. **[widget-state-management.mdc](flutter-clean-architecture/widget-state-management.mdc)** - Widget state management
+5. **[dependency-injection.mdc](flutter-clean-architecture/dependency-injection.mdc)** - DI rules
+6. **[layer-dependencies.mdc](flutter-clean-architecture/layer-dependencies.mdc)** - Layer dependencies
+
+### 📖 Complete Documentation
+See **[index.mdc](flutter-clean-architecture/index.mdc)** for complete overview and usage guide.
+
+## 🎯 Why This Change?
+
+The original rule was too large and covered multiple concerns. By dividing it into focused components:
+
+- ✅ **Easier to follow** specific patterns
+- ✅ **Better organization** of requirements
+- ✅ **Focused validation** of each aspect
+- ✅ **Clearer guidance** for implementation
+- ✅ **Easier maintenance** of rules
+
+## ⚠️ Migration Note
+
+**All existing Clean Architecture requirements remain the same.** The rules have been reorganized for better clarity and maintainability.
+
+### Quick Reference - Core Requirements:
+- ✅ Clean Architecture folder structure
+- ✅ UseCase pattern with sealed UseCaseResult error handling (no Either allowed)
+- ✅ BLoC with sealed classes for events/states
+- ✅ Widget state management restrictions
+- ✅ get_it dependency injection
+- ✅ Layer dependency enforcement
+
+**For detailed implementation guidance, please refer to the specific rule files in the `flutter-clean-architecture/` directory.**
+
+    - **All data processing and calculations must be in BLoC** - widgets should only trigger events and display results.
+    - **BLoC calls UseCases for business logic** - widgets never call UseCases directly, only through BLoC.
+
+  severity: warning
+
+    - **BLoC calls UseCases for business logic** - widgets never call UseCases directly, only through BLoC.
+
+  severity: warning

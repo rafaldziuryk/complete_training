@@ -1,0 +1,494 @@
+---
+globs: *.dart
+alwaysApply: true
+---
+# Error Handling Patterns
+
+## Core Principle
+**EVERY request to server, database, or external service CAN and WILL fail.** All code must be written with this assumption and handle failures gracefully.
+
+## BLoC Error Handling Requirements
+
+### MANDATORY: ErrorState in Every BLoC
+Every BLoC that calls UseCases **MUST** have an ErrorState to handle failures:
+
+```dart
+// ✅ CORRECT - BLoC with proper error handling
+abstract class AuthState extends Equatable {
+  const AuthState();
+  
+  @override
+  List<Object> get props => [];
+}
+
+class AuthInitial extends AuthState {}
+class AuthLoading extends AuthState {}
+class AuthSuccess extends AuthState {
+  final UserEntity user;
+  const AuthSuccess(this.user);
+  
+  @override
+  List<Object> get props => [user];
+}
+
+// MANDATORY - Error state for failures
+class AuthError extends AuthState {
+  final String message;
+  const AuthError(this.message);
+  
+  @override
+  List<Object> get props => [message];
+}
+```
+
+### BLoC Error Handling Pattern
+```dart
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final LoginUseCase _loginUseCase;
+  
+  AuthBloc(this._loginUseCase) : super(AuthInitial()) {
+    on<LoginRequested>(_onLoginRequested);
+  }
+  
+  Future<void> _onLoginRequested(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    
+    try {
+      // CRITICAL: Wrap UseCase calls in try-catch
+      final result = await _loginUseCase(LoginParams(
+        email: event.email,
+        password: event.password,
+      ));
+      
+      // Handle UseCase result patterns
+      result.fold(
+        (failure) => emit(AuthError(failure.message)),
+        (user) => emit(AuthSuccess(user)),
+      );
+    } catch (e) {
+      // FALLBACK: Catch unexpected errors
+      emit(AuthError('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+}
+```
+
+## UseCase Error Handling Requirements
+
+### MANDATORY: Either Pattern for UseCases
+All UseCases **MUST** return Either<Failure, Success> pattern:
+
+```dart
+// ✅ CORRECT - UseCase with Either pattern
+class LoginUseCase extends UseCase<UserEntity, LoginParams> {
+  final AuthRepository _repository;
+  
+  LoginUseCase(this._repository);
+  
+  @override
+  Future<Either<Failure, UserEntity>> call(LoginParams params) async {
+    try {
+      // Validate input
+      if (params.email.isEmpty || params.password.isEmpty) {
+        return Left(ValidationFailure('Email and password are required'));
+      }
+      
+      // Call repository with error handling
+      final user = await _repository.signInWithEmailAndPassword(
+        email: params.email,
+        password: params.password,
+      );
+      
+      if (user != null) {
+        return Right(user);
+      } else {
+        return Left(AuthFailure('Invalid credentials'));
+      }
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
+}
+```
+
+### UseCase Base Class
+```dart
+// Base UseCase with Either pattern
+abstract class UseCase<Type, Params> {
+  Future<Either<Failure, Type>> call(Params params);
+}
+
+// For UseCases without parameters
+abstract class UseCaseNoParams<Type> {
+  Future<Either<Failure, Type>> call();
+}
+```
+
+## Repository Error Handling Requirements
+
+### MANDATORY: Repository Exception Handling
+All repositories **MUST** handle and transform exceptions:
+
+```dart
+class SupabaseAuthRepository implements AuthRepository {
+  final SupabaseClient _supabase;
+  
+  SupabaseAuthRepository(this._supabase);
+  
+  @override
+  Future<UserEntity?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      
+      if (response.user != null) {
+        return UserEntity.fromSupabaseUser(response.user!);
+      }
+      return null;
+      
+    } on AuthException catch (e) {
+      // Transform Supabase exceptions to domain exceptions
+      throw AuthException(_mapAuthError(e.message));
+    } on SocketException catch (e) {
+      // Handle network errors
+      throw NetworkException('No internet connection');
+    } on TimeoutException catch (e) {
+      // Handle timeout errors
+      throw NetworkException('Request timeout');
+    } catch (e) {
+      // Handle unexpected errors
+      throw UnknownException('Unexpected error: ${e.toString()}');
+    }
+  }
+  
+  String _mapAuthError(String? message) {
+    if (message?.contains('Invalid login credentials') == true) {
+      return 'Invalid email or password';
+    } else if (message?.contains('Email not confirmed') == true) {
+      return 'Please verify your email address';
+    }
+    return message ?? 'Authentication failed';
+  }
+}
+```
+
+## Failure Classes Hierarchy
+
+### MANDATORY: Structured Failure Classes
+```dart
+// Base failure class
+abstract class Failure extends Equatable {
+  final String message;
+  const Failure(this.message);
+  
+  @override
+  List<Object> get props => [message];
+}
+
+// Specific failure types
+class NetworkFailure extends Failure {
+  const NetworkFailure(String message) : super(message);
+}
+
+class AuthFailure extends Failure {
+  const AuthFailure(String message) : super(message);
+}
+
+class ValidationFailure extends Failure {
+  const ValidationFailure(String message) : super(message);
+}
+
+class ServerFailure extends Failure {
+  const ServerFailure(String message) : super(message);
+}
+
+class UnknownFailure extends Failure {
+  const UnknownFailure(String message) : super(message);
+}
+```
+
+## Exception Classes Hierarchy
+
+### MANDATORY: Domain Exception Classes
+```dart
+// Base domain exception
+abstract class AppException implements Exception {
+  final String message;
+  const AppException(this.message);
+  
+  @override
+  String toString() => message;
+}
+
+// Specific exception types
+class NetworkException extends AppException {
+  const NetworkException(String message) : super(message);
+}
+
+class AuthException extends AppException {
+  const AuthException(String message) : super(message);
+}
+
+class ValidationException extends AppException {
+  const ValidationException(String message) : super(message);
+}
+
+class ServerException extends AppException {
+  const ServerException(String message) : super(message);
+}
+
+class UnknownException extends AppException {
+  const UnknownException(String message) : super(message);
+}
+```
+
+## UI Error Handling Requirements
+
+### MANDATORY: Error State Handling in UI
+All widgets using BLoCs **MUST** handle error states:
+
+```dart
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          // MANDATORY: Handle error states
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          // MANDATORY: Show error UI when needed
+          if (state is AuthError) {
+            return ErrorWidget(
+              message: state.message,
+              onRetry: () => context.read<AuthBloc>().add(LoginRequested()),
+            );
+          }
+          
+          if (state is AuthLoading) {
+            return LoadingWidget();
+          }
+          
+          return LoginForm();
+        },
+      ),
+    );
+  }
+}
+```
+
+### Error Widget Component
+```dart
+class ErrorWidget extends StatelessWidget {
+  final String message;
+  final VoidCallback? onRetry;
+  
+  const ErrorWidget({
+    super.key,
+    required this.message,
+    this.onRetry,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: Colors.red),
+          SizedBox(height: 16),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
+          if (onRetry != null) ...[
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: Text('Retry'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+## Error Handling Checklist
+
+### For Every BLoC:
+- ✅ Has ErrorState class
+- ✅ Wraps UseCase calls in try-catch
+- ✅ Handles Either<Failure, Success> results
+- ✅ Emits error states on failures
+- ✅ Provides meaningful error messages
+
+### For Every UseCase:
+- ✅ Returns Either<Failure, Success>
+- ✅ Validates input parameters
+- ✅ Catches specific exceptions
+- ✅ Maps exceptions to domain failures
+- ✅ Handles unexpected errors with fallback
+
+### For Every Repository:
+- ✅ Catches all possible exceptions
+- ✅ Transforms external exceptions to domain exceptions
+- ✅ Handles network/timeout errors
+- ✅ Provides meaningful error messages
+- ✅ Logs errors for debugging
+
+### For Every UI Component:
+- ✅ Handles error states in BlocConsumer/BlocBuilder
+- ✅ Shows error messages to user
+- ✅ Provides retry functionality where appropriate
+- ✅ Graceful degradation on errors
+
+## Common Error Handling Mistakes
+
+### ❌ Missing Error States
+```dart
+// WRONG - No error state
+abstract class AuthState {}
+class AuthInitial extends AuthState {}
+class AuthLoading extends AuthState {}
+class AuthSuccess extends AuthState {}
+// Missing AuthError!
+```
+
+### ❌ Not Handling UseCase Failures
+```dart
+// WRONG - Not handling Either result
+Future<void> _onLoginRequested(event, emit) async {
+  final result = await _loginUseCase(params);
+  emit(AuthSuccess(result)); // Will crash on Left(failure)!
+}
+```
+
+### ❌ Swallowing Exceptions
+```dart
+// WRONG - Catching and ignoring errors
+try {
+  final user = await _repository.login(email, password);
+  return user;
+} catch (e) {
+  return null; // Error information lost!
+}
+```
+
+### ❌ Generic Error Messages
+```dart
+// WRONG - Unhelpful error message
+catch (e) {
+  return Left(Failure('Something went wrong'));
+}
+```
+
+### ✅ Correct Error Handling
+```dart
+// CORRECT - Specific error handling
+try {
+  final user = await _repository.login(email, password);
+  return Right(user);
+} on NetworkException catch (e) {
+  return Left(NetworkFailure('Please check your internet connection'));
+} on AuthException catch (e) {
+  return Left(AuthFailure(e.message));
+} catch (e) {
+  return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+}
+```
+
+## Error Logging Requirements
+
+### MANDATORY: Error Logging
+All errors **MUST** be logged for debugging:
+
+```dart
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  Future<void> _onLoginRequested(event, emit) async {
+    try {
+      final result = await _loginUseCase(params);
+      result.fold(
+        (failure) {
+          // MANDATORY: Log errors
+          AppLogger.error('Login failed: ${failure.message}');
+          emit(AuthError(failure.message));
+        },
+        (user) => emit(AuthSuccess(user)),
+      );
+    } catch (e) {
+      // MANDATORY: Log unexpected errors
+      AppLogger.error('Unexpected login error: $e');
+      emit(AuthError('An unexpected error occurred'));
+    }
+  }
+}
+```
+
+## Testing Error Scenarios
+
+### MANDATORY: Test Error Cases
+All error scenarios **MUST** be tested:
+
+```dart
+group('AuthBloc Error Handling', () {
+  test('should emit AuthError when login fails', () async {
+    // Arrange
+    when(() => mockLoginUseCase(any()))
+        .thenAnswer((_) async => Left(AuthFailure('Invalid credentials')));
+    
+    // Act
+    bloc.add(LoginRequested(email: 'test@test.com', password: 'wrong'));
+    
+    // Assert
+    await expectLater(
+      bloc.stream,
+      emitsInOrder([
+        AuthLoading(),
+        AuthError('Invalid credentials'),
+      ]),
+    );
+  });
+  
+  test('should emit AuthError on network failure', () async {
+    // Arrange
+    when(() => mockLoginUseCase(any()))
+        .thenAnswer((_) async => Left(NetworkFailure('No connection')));
+    
+    // Act
+    bloc.add(LoginRequested(email: 'test@test.com', password: 'password'));
+    
+    // Assert
+    await expectLater(
+      bloc.stream,
+      emitsInOrder([
+        AuthLoading(),
+        AuthError('No connection'),
+      ]),
+    );
+  });
+});
+```

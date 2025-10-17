@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/data_service/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/data_service/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/data_service/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l10_bloc_selector/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l10_bloc_selector/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l10_bloc_selector/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l11_bloc_watch/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l11_bloc_watch/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l11_bloc_watch/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l1_simple_bloc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l1_simple_bloc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l1_simple_bloc/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l2_simple_bloc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l2_simple_bloc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l2_simple_bloc/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l3_simple_bloc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l3_simple_bloc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l3_simple_bloc/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l4_data_bloc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l4_data_bloc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l4_data_bloc/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l5_data_bloc_create_value/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l5_data_bloc_create_value/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l5_data_bloc_create_value/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l6_bloc_above_main/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l6_bloc_above_main/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l6_bloc_above_main/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l7_event_tranformation/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l7_event_tranformation/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l7_event_tranformation/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l8_data_bloc_with_search/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l8_data_bloc_with_search/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l8_data_bloc_with_search/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/state_management/bloc/l9_bloc_test/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Dart SDK" level="project" />
+    <orderEntry type="library" name="Dart Packages" level="project" />
+  </component>
+</module>

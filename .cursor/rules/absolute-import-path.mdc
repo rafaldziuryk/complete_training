@@ -1,0 +1,6 @@
+---
+globs: *.dart
+alwaysApply: false
+---
+
+Always use absolute path import style
