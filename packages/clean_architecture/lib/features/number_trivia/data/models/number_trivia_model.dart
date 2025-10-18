@@ -1,9 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'number_trivia_model.g.dart';
-
 /// Data model for number trivia (DTO)
-@JsonSerializable()
 class NumberTriviaModel {
   final String text;
   final int number;
@@ -14,9 +9,18 @@ class NumberTriviaModel {
   });
   
   /// Creates model from JSON
-  factory NumberTriviaModel.fromJson(Map<String, dynamic> json) => 
-      _$NumberTriviaModelFromJson(json);
+  factory NumberTriviaModel.fromJson(Map<String, dynamic> json) {
+    return NumberTriviaModel(
+      text: json['text'] as String,
+      number: (json['number'] as num).toInt(),
+    );
+  }
   
   /// Converts model to JSON
-  Map<String, dynamic> toJson() => _$NumberTriviaModelToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'number': number,
+    };
+  }
 }
