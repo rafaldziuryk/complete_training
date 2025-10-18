@@ -2,6 +2,7 @@ import '../../domain/entities/number_trivia.dart';
 import '../../domain/repositories/number_trivia_repository.dart';
 import '../datasources/number_trivia_local_data_source.dart';
 import '../datasources/number_trivia_remote_data_source.dart';
+import '../mappers/number_trivia_mapper.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/network_info.dart';
@@ -29,11 +30,11 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
         // Cache the result
         await _localDataSource.cacheNumberTrivia(remoteTrivia);
         
-        return UseCaseSuccess(remoteTrivia.toEntity());
+        return UseCaseSuccess(NumberTriviaMapper.toEntity(remoteTrivia));
       } else {
         // Get from local cache
         final localTrivia = await _localDataSource.getLastNumberTrivia();
-        return UseCaseSuccess(localTrivia.toEntity());
+        return UseCaseSuccess(NumberTriviaMapper.toEntity(localTrivia));
       }
     } on ServerException catch (e) {
       return UseCaseFailure(ServerFailure(e.message));
@@ -56,11 +57,11 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
         // Cache the result
         await _localDataSource.cacheNumberTrivia(remoteTrivia);
         
-        return UseCaseSuccess(remoteTrivia.toEntity());
+        return UseCaseSuccess(NumberTriviaMapper.toEntity(remoteTrivia));
       } else {
         // Get from local cache
         final localTrivia = await _localDataSource.getLastNumberTrivia();
-        return UseCaseSuccess(localTrivia.toEntity());
+        return UseCaseSuccess(NumberTriviaMapper.toEntity(localTrivia));
       }
     } on ServerException catch (e) {
       return UseCaseFailure(ServerFailure(e.message));

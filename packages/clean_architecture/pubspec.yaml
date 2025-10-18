@@ -1,4 +1,4 @@
-name: clean_architecture_modern
+name: clean_architecture
 description: Modern Clean Architecture for Flutter with sealed classes and mappers
 
 version: 1.0.0+1
