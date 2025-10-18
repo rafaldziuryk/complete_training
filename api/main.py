@@ -1,9 +1,20 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import random
+import os
 from typing import Dict
 
 app = FastAPI(title="Number Facts API", version="1.0.0")
+
+# Add CORS middleware for Flutter
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your Flutter app's domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Model for response
 class NumberFact(BaseModel):
@@ -139,4 +150,5 @@ async def get_exact_fact(number: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

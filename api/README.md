@@ -48,6 +48,8 @@ Returns a fact about a specific number between 1 and 100.
 
 ## Setup and Running
 
+### Local Development
+
 1. **Create virtual environment:**
    ```bash
    python3 -m venv venv
@@ -73,6 +75,34 @@ Returns a fact about a specific number between 1 and 100.
    - API will be available at: `http://localhost:8000`
    - Interactive docs: `http://localhost:8000/docs`
    - Alternative docs: `http://localhost:8000/redoc`
+
+### Deploy to Render.com
+
+1. **Push to GitHub repository**
+2. **Connect to Render.com:**
+   - Go to [Render.com](https://render.com)
+   - Create new Web Service
+   - Connect your GitHub repository
+   - Select the `api` folder as root directory
+   - Use Python environment
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `python main.py`
+
+3. **Environment Variables:**
+   - `PORT`: Automatically set by Render.com
+   - `PYTHON_VERSION`: 3.9.18
+
+### Deploy with Docker
+
+1. **Build Docker image:**
+   ```bash
+   docker build -t number-facts-api .
+   ```
+
+2. **Run container:**
+   ```bash
+   docker run -p 8000:8000 number-facts-api
+   ```
 
 ## Example Usage
 
