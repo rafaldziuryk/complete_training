@@ -19,7 +19,7 @@ app.add_middleware(
 # Model for response
 class NumberFact(BaseModel):
     number: int
-    fact: str
+    text: str
 
 # Dictionary with facts for numbers 1-100
 NUMBER_FACTS: Dict[int, str] = {
@@ -134,7 +134,7 @@ async def get_random_fact():
     """Get a random fact about a number between 1 and 100."""
     number = random.randint(1, 100)
     fact = NUMBER_FACTS[number]
-    return NumberFact(number=number, fact=fact)
+    return NumberFact(number=number, text=fact)
 
 @app.get("/exact/{number}", response_model=NumberFact)
 async def get_exact_fact(number: int):
@@ -146,7 +146,7 @@ async def get_exact_fact(number: int):
         )
     
     fact = NUMBER_FACTS[number]
-    return NumberFact(number=number, fact=fact)
+    return NumberFact(number=number, text=fact)
 
 if __name__ == "__main__":
     import uvicorn
