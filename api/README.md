@@ -81,16 +81,18 @@ Returns a fact about a specific number between 1 and 100.
 1. **Push to GitHub repository**
 2. **Connect to Render.com:**
    - Go to [Render.com](https://render.com)
-   - Create new Web Service
+   - Create new **Web Service**
    - Connect your GitHub repository
    - Select the `api` folder as root directory
-   - Use Python environment
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python main.py`
+   - Use **Python 3** environment
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 
 3. **Environment Variables:**
    - `PORT`: Automatically set by Render.com
-   - `PYTHON_VERSION`: 3.9.18
+   - `PYTHON_VERSION`: 3.9.18 (optional)
+
+4. **Your API will be live at**: `https://your-app-name.onrender.com`
 
 ### Deploy with Docker
 
