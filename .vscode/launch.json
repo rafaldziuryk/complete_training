@@ -28,6 +28,7 @@
     {"name": "http_l3", "type": "dart", "request": "launch", "program": "packages/http/http_l3/lib/main.dart"},
     {"name": "http_l4", "type": "dart", "request": "launch", "program": "packages/http/http_l4/lib/main.dart"},
     {"name": "http_l5", "type": "dart", "request": "launch", "program": "packages/http/http_l5/lib/main.dart"},
-    {"name": "clean_architecture_modern", "type": "dart", "request": "launch", "program": "packages/clean_architecture/clean_architecture_modern/lib/main.dart"}
+    {"name": "clean_architecture_modern", "type": "dart", "request": "launch", "program": "packages/clean_architecture/clean_architecture_modern/lib/main.dart"},
+    {"name": "api_fastapi", "type": "python", "request": "launch", "program": "packages/api/main.py", "console": "integratedTerminal", "cwd": "${workspaceFolder}/packages/api"}
   ]
 }

@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration name="clean_architecture_modern" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="filePath" value="$PROJECT_DIR$/packages/clean_architecture/clean_architecture_modern/lib/main.dart" />
-    <option name="buildFlavor" value="" />
+  <configuration default="false" name="clean_architecture_modern" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="filePath" value="$PROJECT_DIR$/packages/clean_architecture/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>

@@ -69,6 +69,12 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/step_6/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/clean_architecture_modern/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/clean_architecture_modern/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/clean_architecture/clean_architecture_modern/build" />
       <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/dart/l1_variables_functions/build" />
