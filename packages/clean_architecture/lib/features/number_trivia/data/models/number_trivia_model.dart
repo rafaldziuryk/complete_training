@@ -7,6 +7,15 @@ class NumberTriviaModel {
     required this.text,
     required this.number,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is NumberTriviaModel && other.text == text && other.number == number;
+  }
+
+  @override
+  int get hashCode => text.hashCode ^ number.hashCode;
   
   /// Creates model from JSON
   factory NumberTriviaModel.fromJson(Map<String, dynamic> json) {

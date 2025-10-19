@@ -34,9 +34,8 @@ dev_dependencies:
     sdk: flutter
   
   # Testing
-  mockito: ^5.4.2
+  mocktail: ^1.0.1
   bloc_test: ^9.1.5
-  
   
   # Linting
   flutter_lints: ^3.0.1
