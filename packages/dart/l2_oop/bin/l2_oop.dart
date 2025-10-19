@@ -11,51 +11,20 @@ abstract class Flyable {
   String get flightSpeed;
 }
 
-// Sealed class example
-sealed class Shape {
-  double area();
-  double perimeter();
+// Class implementing interface
+class Bird extends Animal implements Flyable {
+  @override
+  String name() => 'Bird';
+  
+  @override
+  void fly() {
+    print('Flying high!');
+  }
+  
+  @override
+  String get flightSpeed => '50 km/h';
 }
 
-class Circle extends Shape {
-  final double radius;
-  
-  Circle(this.radius);
-  
-  @override
-  double area() => 3.14159 * radius * radius;
-  
-  @override
-  double perimeter() => 2 * 3.14159 * radius;
-}
-
-class Rectangle extends Shape {
-  final double width;
-  final double height;
-  
-  Rectangle(this.width, this.height);
-  
-  @override
-  double area() => width * height;
-  
-  @override
-  double perimeter() => 2 * (width + height);
-}
-
-class Triangle extends Shape {
-  final double base;
-  final double height;
-  final double side1;
-  final double side2;
-  
-  Triangle(this.base, this.height, this.side1, this.side2);
-  
-  @override
-  double area() => 0.5 * base * height;
-  
-  @override
-  double perimeter() => base + side1 + side2;
-}
 
 class Mammal {
   String name() => 'Mammal';
@@ -135,18 +104,50 @@ class DogE extends Mammal with DogMixin implements Doggy {
   DogE({required super.age});
 }
 
-// Class implementing interface
-class Bird extends Animal implements Flyable {
-  @override
-  String name() => 'Bird';
+// Sealed class example
+sealed class Shape {
+  double area();
+  double perimeter();
+}
+
+class Circle extends Shape {
+  final double radius;
+  
+  Circle(this.radius);
   
   @override
-  void fly() {
-    print('Flying high!');
-  }
+  double area() => 3.14159 * radius * radius;
   
   @override
-  String get flightSpeed => '50 km/h';
+  double perimeter() => 2 * 3.14159 * radius;
+}
+
+class Rectangle extends Shape {
+  final double width;
+  final double height;
+  
+  Rectangle(this.width, this.height);
+  
+  @override
+  double area() => width * height;
+  
+  @override
+  double perimeter() => 2 * (width + height);
+}
+
+class Triangle extends Shape {
+  final double base;
+  final double height;
+  final double side1;
+  final double side2;
+  
+  Triangle(this.base, this.height, this.side1, this.side2);
+  
+  @override
+  double area() => 0.5 * base * height;
+  
+  @override
+  double perimeter() => base + side1 + side2;
 }
 
 void main() {
