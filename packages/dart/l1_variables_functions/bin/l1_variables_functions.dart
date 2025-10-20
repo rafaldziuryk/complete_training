@@ -18,7 +18,7 @@ void main() {
   print(sum(2, 3));
   print(greet('Rafał'));
   print(configure(timeoutSeconds: 5));
-  print(configure());
+  print(configure(timeoutSeconds: 40));
 
   // Closures
   final inc = makeIncrementer(2);
@@ -31,7 +31,7 @@ String greet(String name, [String suffix = '!']) {
   return 'Hello, $name$suffix';
 }
 
-Map<String, Object> configure({int timeoutSeconds = 30, bool debug = false}) {
+Map<String, dynamic> configure(String param1, {required int timeoutSeconds, bool debug = false}) {
   return {
     'timeout': timeoutSeconds,
     'debug': debug,
@@ -39,5 +39,6 @@ Map<String, Object> configure({int timeoutSeconds = 30, bool debug = false}) {
 }
 
 int Function(int) makeIncrementer(int by) {
-  return (int x) => x + by;
+  // return (int x) => x + by;
+  return (int x) {return  x + by;};
 }

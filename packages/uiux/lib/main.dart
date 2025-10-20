@@ -108,13 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         Container(
                           padding: const EdgeInsets.all(4),
                           color: Colors.grey,
                           child: Center(child: Text(DateTime.now().toIso8601String())),
                         ),
-                        const Text("Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum"),
+                        InkWell(
+                            onTap: () => print("ontap"),
+                            child: const Text("Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum")),
                         ElevatedButton(
                           onPressed: () {},
                           child: const Text("Rafał"),
@@ -140,12 +143,17 @@ class _MyHomePageState extends State<MyHomePage> {
   AppBar appbar() {
     return AppBar(
       flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: <Color>[Colors.black, Colors.blue]),
-        ),
+          // decoration: const BoxDecoration(
+          //   gradient: LinearGradient(
+          //       begin: Alignment.topCenter,
+          //       end: Alignment.bottomCenter,
+          //       colors: <Color>[Colors.black, Colors.blue]),
+          // ),
+          ),
+      title: IconButton(
+        icon: const Icon(Icons.calendar_today),
+        onPressed: () {},
       ),
-      title: const Text('Tutorial'),
       actions: [
         IconButton(
           icon: const Icon(Icons.calendar_month),
@@ -159,14 +167,12 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: const Icon(Icons.calendar_today),
           onPressed: () {},
         ),
+        Text("Lorem ipsum"),
       ],
-      leading: IconButton(
-        icon: const Icon(Icons.add),
-        onPressed: () {},
-      ),
+      leading: IconButton(icon: const Icon(Icons.add), onPressed: () {}),
       bottom: const TabBar(
         tabs: [
-          Text('TAB1'),
+          Text('TAB4'),
           Text('TAB2'),
           Text('TAB3'),
         ],

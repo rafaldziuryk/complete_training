@@ -28,7 +28,7 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
-  Future<String> fact = Future(() => '');
+  Future<String>? fact = null;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class _PageState extends State<Page> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return const SizedBox.shrink();
+                  return const Text("Tap button");
                 }
             }
           },

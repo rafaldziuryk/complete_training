@@ -38,7 +38,7 @@ class _PageState extends State<Page> {
         title: const Text('HTTP L1 - Basic HTTP'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           final url = Uri.parse('https://catfact.ninja/fact');
           http.get(url).then((response) {
             print(response.body);
@@ -49,6 +49,14 @@ class _PageState extends State<Page> {
             });
           });
           print('run get');
+
+          final response = await http.get(url);
+          print(response.body);
+          final json = jsonDecode(response.body);
+          print(json);
+          setState(() {
+            fact = json['fact'];
+          });
         },
         child: const Icon(Icons.play_arrow),
       ),

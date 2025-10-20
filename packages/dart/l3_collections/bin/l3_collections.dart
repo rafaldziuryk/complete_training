@@ -11,11 +11,15 @@ void main() {
 
   // Set (unique)
   final unique = numbers.toSet();
+
+  final list = [1,2,3,4,5,6,7];
+  final set = {1,2,3};
+
   print('unique: $unique');
 
   // Map
   final users = [
-    {'id': 1, 'name': 'A'},
+    {'id': 1, 'name': {"first": "Rafal", "last": "Dziuryk"}},
     {'id': 2, 'name': 'B'},
     {'id': 3, 'name': 'C'},
   ];
@@ -32,6 +36,7 @@ void main() {
     0,
     ...numbers,
     if (includeExtras) ...[99, 100],
+    if (includeExtras) 99,
     for (final n in numbers) n * 10,
   ];
   print('view: $view');

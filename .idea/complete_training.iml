@@ -117,9 +117,13 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l8/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l8/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/local_storage/local_storage_l8/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/uiux/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/uiux/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/uiux/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
+    <orderEntry type="library" name="Dart Packages" level="project" />
   </component>
 </module>

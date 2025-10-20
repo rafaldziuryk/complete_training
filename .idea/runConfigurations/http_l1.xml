@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration name="http_l1" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="filePath" value="/Users/rafaldziuryk/SupportStudioProjects/complete_training/packages/http/http_l1/lib/main.dart" />
-    <option name="buildFlavor" value="" />
+  <configuration default="false" name="http_l1" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="filePath" value="$PROJECT_DIR$/packages/http/http_l1/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>

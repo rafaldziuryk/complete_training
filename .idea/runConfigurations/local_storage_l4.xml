@@ -1,8 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration name="local_storage_l4" factoryName="Flutter" type="FlutterRunConfigurationType">
-        <option name="filePath"
-            value="/Users/rafaldziuryk/SupportStudioProjects/complete_training/packages/local_storage/local_storage_l4/lib/main.dart" />
-        <option name="buildFlavor" value="" />
-        <method v="2" />
-    </configuration>
+  <configuration default="false" name="local_storage_l4" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="filePath" value="$PROJECT_DIR$/packages/local_storage/local_storage_l4/lib/main.dart" />
+    <method v="2" />
+  </configuration>
 </component>
