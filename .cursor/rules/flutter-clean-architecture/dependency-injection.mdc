@@ -1,0 +1,229 @@
+---
+globs: *.dart
+alwaysApply: true
+---
+# Dependency Injection Rules
+
+## MANDATORY: DI Framework Requirements
+
+### Allowed DI Framework
+- **ONLY use `get_it` for dependency injection**
+- **AVOID `riverpod`, `injectable`, or other DI frameworks**
+- **Use service locator pattern in `main.dart`**
+
+### Service Locator Setup
+```dart
+// lib/core/di/service_locator.dart
+import 'package:get_it/get_it.dart';
+
+final GetIt sl = GetIt.instance;
+
+void setupServiceLocator() {
+  // Core services first
+  sl.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
+  
+  // Feature modules
+  setupAuthModule(sl);
+  setupUserModule(sl);
+  setupCompanyModule(sl);
+}
+```
+
+### Feature Module Pattern
+```dart
+// lib/features/auth/di/auth_module.dart
+void setupAuthModule(GetIt sl) {
+  // 1. Register repositories - SINGLETON
+  sl.registerLazySingleton<AuthRepository>(
+    () => SupabaseAuthRepository(sl()),
+  );
+  
+  // 2. Register use cases - SINGLETON
+  sl.registerLazySingleton<LoginUseCase>(
+    () => LoginUseCase(sl()),
+  );
+  
+  sl.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(sl()),
+  );
+  
+  // 3. Register BLoCs - FACTORY (CRITICAL!)
+  sl.registerFactory<AuthBloc>(
+    () => AuthBloc(
+      loginUseCase: sl(),
+      logoutUseCase: sl(),
+    ),
+  );
+}
+```
+
+## MANDATORY: Registration Types
+
+### SINGLETON Registration (`registerLazySingleton`)
+**Use for long-lived, stateless components:**
+- ✅ **Data Sources** (remote, local)
+- ✅ **Repositories** (data layer implementations)
+- ✅ **Services** (domain business logic)
+- ✅ **Use Cases** (application logic)
+- ✅ **Core configurations** (theme, router, etc.)
+
+```dart
+// CORRECT - Singleton for stateless services
+sl.registerLazySingleton<AuthService>(() => AuthService(sl()));
+sl.registerLazySingleton<UserRepository>(() => SupabaseUserRepository(sl()));
+sl.registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()));
+```
+
+### FACTORY Registration (`registerFactory`)
+**Use for stateful, short-lived components:**
+- ✅ **BLoCs/Cubits** (presentation state management)
+- ✅ **Controllers** with lifecycle
+- ✅ **Temporary objects** that need fresh instances
+
+```dart
+// CORRECT - Factory for stateful BLoCs
+sl.registerFactory<AuthBloc>(() => AuthBloc(
+  loginUseCase: sl(),
+  logoutUseCase: sl(),
+));
+
+sl.registerFactory<ProfileBloc>(() => ProfileBloc(
+  getUserUseCase: sl(),
+  updateUserUseCase: sl(),
+));
+```
+
+## MANDATORY: Registration Order
+**CRITICAL**: Register dependencies in this exact order:
+
+1. **Core Services** (database clients, network clients)
+2. **Data Sources** (remote, local data access)
+3. **Repositories** (data layer implementations)
+4. **Services** (domain business logic)
+5. **Use Cases** (application logic)
+6. **BLoCs/Cubits** (presentation logic) - LAST!
+
+```dart
+void setupAuthModule(GetIt sl) {
+  // 1. Core services (if needed)
+  // Already registered in main service locator
+  
+  // 2. Data sources
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
+  
+  // 3. Repositories
+  sl.registerLazySingleton<AuthRepository>(() => SupabaseAuthRepository(sl()));
+  
+  // 4. Services
+  sl.registerLazySingleton<AuthService>(() => AuthService(sl()));
+  
+  // 5. Use cases
+  sl.registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()));
+  sl.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(sl()));
+  
+  // 6. BLoCs - LAST and as FACTORY
+  sl.registerFactory<AuthBloc>(() => AuthBloc(
+    loginUseCase: sl(),
+    logoutUseCase: sl(),
+  ));
+}
+```
+
+## Why BLoCs Must Be Factories
+
+### The Problem with Singleton BLoCs
+```dart
+// ❌ WRONG - Don't do this!
+sl.registerLazySingleton<AuthBloc>(() => AuthBloc(sl()));
+
+// Problems:
+// 1. Same BLoC instance shared across widgets
+// 2. State pollution between different screens
+// 3. Memory leaks - BLoC never disposed
+// 4. Unpredictable state behavior
+```
+
+### The Solution with Factory BLoCs
+```dart
+// ✅ CORRECT - Always use factory for BLoCs
+sl.registerFactory<AuthBloc>(() => AuthBloc(sl()));
+
+// Benefits:
+// 1. Fresh BLoC instance for each BlocProvider
+// 2. Clean state for each screen/widget
+// 3. Proper disposal when widget is destroyed
+// 4. Predictable state management
+```
+
+### BLoC Usage Pattern
+```dart
+// In your screen/widget
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<AuthBloc>(
+      // Factory creates new instance each time
+      create: (context) => sl<AuthBloc>(),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          // Fresh, clean state for this screen
+          return LoginForm();
+        },
+      ),
+    );
+  }
+}
+```
+
+## Main.dart Setup
+```dart
+// lib/main.dart
+import 'package:get_it/get_it.dart';
+import 'package:flutter/material.dart';
+
+import 'core/di/service_locator.dart';
+import 'core/routing/app_router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Setup dependency injection
+  setupServiceLocator();
+  
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: appRouter,
+      title: 'My App',
+    );
+  }
+}
+```
+
+## ❌ Violations
+- Using `riverpod`, `injectable`, or other DI frameworks instead of `get_it`
+- **Wrong registration types** (BLoC as singleton, repository as factory)
+- **Wrong registration order** (BLoC registered before its dependencies)
+- **Missing DI setup** in main.dart
+- **Not using service locator pattern** consistently
+- **BLoC not registered as factory** (causes state pollution)
+
+## ✅ Correct Patterns
+- **Use `get_it` for all dependency injection**
+- **Register BLoCs as factories** for clean state management
+- **Register repositories and use cases as singletons** for performance
+- **Follow registration order** (dependencies first, consumers last)
+- **Use service locator pattern** in main.dart
+- **Test DI configuration** with unit tests
+
+## 💡 Best Practices
+- Keep DI modules focused on single features
+- Use meaningful registration names
+- Test DI resolution in unit tests
+- Document complex dependencies
+- Use lazy registration for performance
+- Avoid circular dependencies

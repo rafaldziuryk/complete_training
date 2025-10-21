@@ -1,0 +1,48 @@
+---
+globs: *.dart
+alwaysApply: true
+---
+# Widget Organization Rules
+
+## Split Large Widgets into Smaller Classes
+
+### Widget File Structure
+- Each widget should be in its own file when it exceeds 200 lines
+- Widget files should be named using snake_case (e.g., `user_profile_card.dart`)
+- Place widgets in appropriate feature-specific `widgets/` directories
+- Use descriptive names that clearly indicate the widget's purpose
+
+### Widget Splitting Guidelines
+- **Large Screens**: Split into logical sections (header, body, footer)
+- **Complex Forms**: Extract form fields into separate widget classes
+- **Reusable Components**: Create standalone widget files for components used across multiple screens
+- **List Items**: Extract list item widgets into separate files
+
+### Example Structure
+```
+lib/features/profile/presentation/
+├── pages/
+│   └── profile_screen.dart (main screen logic)
+└── widgets/
+    ├── profile_header_widget.dart
+    ├── profile_info_card.dart
+    ├── profile_settings_section.dart
+    └── profile_action_buttons.dart
+```
+
+### Widget Class Naming
+- Use descriptive names ending with `Widget` (e.g., `ProfileHeaderWidget`)
+- Keep class names concise but clear about functionality
+- Avoid generic names like `CustomWidget` or `MyWidget`
+
+### When to Split Widgets
+- Widget class exceeds 200 lines
+- Widget has multiple distinct responsibilities
+- Widget contains complex nested UI logic
+- Widget is reused in multiple locations
+- Widget makes the parent file hard to read/maintain
+
+### Import Organization
+- Group widget imports together
+- Use absolute imports: `package:stamp/features/[feature]/presentation/widgets/[widget_name].dart`
+- Place custom widget imports after Flutter/package imports

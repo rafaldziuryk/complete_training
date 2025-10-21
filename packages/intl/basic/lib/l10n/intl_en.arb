@@ -1,0 +1,6 @@
+{
+  "@@locale":"en",
+  "appName" : "Application",
+  "incrementLabel" : "You have pushed the button this many times:",
+  "currentLanguage" : "Current Language:"
+}
