@@ -1,0 +1,645 @@
+---
+globs: *.dart
+alwaysApply: true
+---
+
+# BLoC Sealed Classes Pattern
+
+## MANDATORY: BLoC Structure Requirements
+
+### File Organization
+- **Each BLoC MUST have its own folder** under `presentation/bloc/`
+- **BLoC files MUST be in separate files**: `*_bloc.dart`, `*_event.dart`, `*_state.dart`
+- **Base classes MUST be sealed classes** for pattern matching
+- **Specific classes MUST be final classes** for immutability
+
+### Event Pattern
+```dart
+// login_event.dart
+sealed class LoginEvent {}
+
+final class LoginRequested extends LoginEvent {
+  final String email;
+  final String password;
+  
+  const LoginRequested({required this.email, required this.password});
+}
+
+final class LoginLogoutRequested extends LoginEvent {}
+
+final class LoginResetRequested extends LoginEvent {}
+```
+
+### State Pattern
+```dart
+// login_state.dart
+sealed class LoginState {}
+
+final class LoginInitial extends LoginState {}
+
+final class LoginLoading extends LoginState {}
+
+final class LoginSuccess extends LoginState {
+  final UserEntity user;
+  
+  const LoginSuccess({required this.user});
+}
+
+final class LoginError extends LoginState {
+  final String message;
+  
+  const LoginError({required this.message});
+}
+```
+
+### BLoC Implementation
+```dart
+// login_bloc.dart
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  final LoginUseCase _loginUseCase;
+  final LogoutUseCase _logoutUseCase;
+  
+  LoginBloc({
+    required LoginUseCase loginUseCase,
+    required LogoutUseCase logoutUseCase,
+  })  : _loginUseCase = loginUseCase,
+        _logoutUseCase = logoutUseCase,
+        super(LoginInitial()) {
+    on<LoginRequested>(_onLoginRequested);
+    on<LoginLogoutRequested>(_onLogoutRequested);
+    on<LoginResetRequested>(_onResetRequested);
+  }
+  
+  Future<void> _onLoginRequested(
+    LoginRequested event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    
+    try {
+      final result = await _loginUseCase(LoginParams(
+        email: event.email,
+        password: event.password,
+      ));
+      
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (user) => emit(LoginSuccess(user: user)),
+      );
+    } catch (e) {
+      emit(LoginError(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+  
+  Future<void> _onLogoutRequested(
+    LoginLogoutRequested event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    
+    try {
+      final result = await _logoutUseCase(LogoutParams());
+      
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (_) => emit(LoginInitial()),
+      );
+    } catch (e) {
+      emit(LoginError(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+  
+  void _onResetRequested(
+    LoginResetRequested event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(LoginInitial());
+  }
+}
+```
+
+## MANDATORY: BLoC Independence Rules
+
+### BLoC Isolation Requirements
+- **BLoCs MUST be completely independent** of other BLoCs
+- **BLoCs MUST NOT contain other BLoCs** as dependencies
+- **BLoCs MUST NOT depend on other BLoCs** for their functionality
+- **BLoCs MUST only depend on UseCases** for business logic
+- **BLoCs MUST NOT communicate directly with other BLoCs**
+
+### ❌ FORBIDDEN: BLoC Dependencies
+```dart
+// ❌ WRONG: BLoC depending on another BLoC
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
+  final AuthBloc _authBloc; // ❌ FORBIDDEN: BLoC dependency
+  
+  UserProfileBloc(this._authBloc) : super(UserProfileInitial()) {
+    // ❌ WRONG: Listening to another BLoC
+    _authBloc.stream.listen((authState) {
+      // This creates tight coupling between BLoCs
+    });
+  }
+}
+
+// ❌ WRONG: BLoC containing another BLoC
+class MainBloc extends Bloc<MainEvent, MainState> {
+  final AuthBloc _authBloc; // ❌ FORBIDDEN: BLoC composition
+  final UserBloc _userBloc; // ❌ FORBIDDEN: BLoC composition
+  
+  MainBloc() : super(MainInitial()) {
+    _authBloc = AuthBloc(); // ❌ WRONG: Creating BLoCs inside BLoCs
+    _userBloc = UserBloc(); // ❌ WRONG: Creating BLoCs inside BLoCs
+  }
+}
+```
+
+### ✅ CORRECT: BLoC Independence
+```dart
+// ✅ CORRECT: BLoC depends only on UseCases
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
+  final GetUserProfileUseCase _getUserProfileUseCase;
+  final UpdateUserProfileUseCase _updateUserProfileUseCase;
+  
+  UserProfileBloc({
+    required GetUserProfileUseCase getUserProfileUseCase,
+    required UpdateUserProfileUseCase updateUserProfileUseCase,
+  })  : _getUserProfileUseCase = getUserProfileUseCase,
+        _updateUserProfileUseCase = updateUserProfileUseCase,
+        super(UserProfileInitial()) {
+    on<LoadUserProfile>(_onLoadUserProfile);
+    on<UpdateUserProfile>(_onUpdateUserProfile);
+  }
+  
+  Future<void> _onLoadUserProfile(
+    LoadUserProfile event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    emit(UserProfileLoading());
+    
+    final result = await _getUserProfileUseCase(GetUserProfileParams(
+      userId: event.userId,
+    ));
+    
+    result.fold(
+      (failure) => emit(UserProfileError(message: failure.message)),
+      (profile) => emit(UserProfileLoaded(profile: profile)),
+    );
+  }
+}
+```
+
+### ✅ CORRECT: Widget-Level BLoC Coordination
+```dart
+// ✅ CORRECT: Widget coordinates multiple BLoCs
+class MainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        BlocProvider<UserBloc>(create: (context) => sl<UserBloc>()),
+      ],
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, authState) {
+          // ✅ CORRECT: Widget coordinates BLoC interactions
+          if (authState is AuthAuthenticated) {
+            context.read<UserBloc>().add(LoadUser(userId: authState.user.id));
+          }
+        },
+        child: const MainContent(),
+      ),
+    );
+  }
+}
+```
+
+### BLoC Communication Patterns
+
+#### ✅ CORRECT: Event-Based Communication
+```dart
+// ✅ CORRECT: BLoCs communicate through events
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  void _onUserAuthenticated(
+    UserAuthenticated event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(AuthAuthenticated(user: event.user));
+    // ✅ CORRECT: Emit event that other BLoCs can listen to
+  }
+}
+
+class UserBloc extends Bloc<UserEvent, UserState> {
+  void _onAuthStateChanged(
+    AuthStateChanged event,
+    Emitter<UserState> emit,
+  ) {
+    // ✅ CORRECT: React to auth state changes
+    if (event.authState is AuthAuthenticated) {
+      add(LoadUser(userId: event.authState.user.id));
+    }
+  }
+}
+```
+
+#### ✅ CORRECT: Shared State Through Repository
+```dart
+// ✅ CORRECT: BLoCs share state through repository
+class SharedUserRepository {
+  UserEntity? _currentUser;
+  
+  UserEntity? get currentUser => _currentUser;
+  
+  void setCurrentUser(UserEntity user) {
+    _currentUser = user;
+  }
+}
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final SharedUserRepository _userRepository;
+  
+  void _onUserAuthenticated(
+    UserAuthenticated event,
+    Emitter<AuthState> emit,
+  ) {
+    _userRepository.setCurrentUser(event.user); // ✅ CORRECT: Update shared state
+    emit(AuthAuthenticated(user: event.user));
+  }
+}
+
+class UserBloc extends Bloc<UserEvent, UserState> {
+  final SharedUserRepository _userRepository;
+  
+  void _onLoadUser(LoadUser event, Emitter<UserState> emit) {
+    final user = _userRepository.currentUser; // ✅ CORRECT: Access shared state
+    if (user != null) {
+      emit(UserLoaded(user: user));
+    }
+  }
+}
+```
+
+## ❌ Violations
+- **Base event or state classes not declared as `sealed class`** (e.g., `abstract class LoginEvent`)
+- **Event or state subclasses not declared as `final class`** (e.g., `class LoginRequested`)
+- BLoC files combined into single file
+- BLoC files placed outside their own folder
+- Missing ErrorState in BLoC
+- Not using pattern matching with switch expressions
+- Not handling Either results from UseCases
+- **BLoCs depending on other BLoCs** (creates tight coupling)
+- **BLoCs containing other BLoCs** (violates single responsibility)
+- **BLoCs communicating directly with other BLoCs** (use events instead)
+- **Creating BLoCs inside other BLoCs** (use dependency injection)
+
+## ✅ Correct Examples
+```dart
+// ✅ CORRECT: Sealed classes with pattern matching
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return switch (state) {
+          LoginInitial() => const LoginForm(),
+          LoginLoading() => const CircularProgressIndicator(),
+          LoginSuccess(user: final user) => UserProfile(user: user),
+          LoginError(message: final error) => ErrorWidget(message: error),
+        };
+      },
+    );
+  }
+}
+```
+
+## 💡 Best Practices
+- Use sealed classes for exhaustive pattern matching
+- Use final classes for immutable events and states
+- Always include ErrorState in every BLoC
+- Handle Either results from UseCases properly
+- Use switch expressions for state handling
+- Keep events and states focused and minimal
+- Test all BLoC scenarios with unit tests
+
+- Use switch expressions for state handling
+- Keep events and states focused and minimal
+- Test all BLoC scenarios with unit tests
+# BLoC Sealed Classes Pattern
+
+## MANDATORY: BLoC Structure Requirements
+
+### File Organization
+- **Each BLoC MUST have its own folder** under `presentation/bloc/`
+- **BLoC files MUST be in separate files**: `*_bloc.dart`, `*_event.dart`, `*_state.dart`
+- **Base classes MUST be sealed classes** for pattern matching
+- **Specific classes MUST be final classes** for immutability
+
+### Event Pattern
+```dart
+// login_event.dart
+sealed class LoginEvent {}
+
+final class LoginRequested extends LoginEvent {
+  final String email;
+  final String password;
+  
+  const LoginRequested({required this.email, required this.password});
+}
+
+final class LoginLogoutRequested extends LoginEvent {}
+
+final class LoginResetRequested extends LoginEvent {}
+```
+
+### State Pattern
+```dart
+// login_state.dart
+sealed class LoginState {}
+
+final class LoginInitial extends LoginState {}
+
+final class LoginLoading extends LoginState {}
+
+final class LoginSuccess extends LoginState {
+  final UserEntity user;
+  
+  const LoginSuccess({required this.user});
+}
+
+final class LoginError extends LoginState {
+  final String message;
+  
+  const LoginError({required this.message});
+}
+```
+
+### BLoC Implementation
+```dart
+// login_bloc.dart
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  final LoginUseCase _loginUseCase;
+  final LogoutUseCase _logoutUseCase;
+  
+  LoginBloc({
+    required LoginUseCase loginUseCase,
+    required LogoutUseCase logoutUseCase,
+  })  : _loginUseCase = loginUseCase,
+        _logoutUseCase = logoutUseCase,
+        super(LoginInitial()) {
+    on<LoginRequested>(_onLoginRequested);
+    on<LoginLogoutRequested>(_onLogoutRequested);
+    on<LoginResetRequested>(_onResetRequested);
+  }
+  
+  Future<void> _onLoginRequested(
+    LoginRequested event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    
+    try {
+      final result = await _loginUseCase(LoginParams(
+        email: event.email,
+        password: event.password,
+      ));
+      
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (user) => emit(LoginSuccess(user: user)),
+      );
+    } catch (e) {
+      emit(LoginError(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+  
+  Future<void> _onLogoutRequested(
+    LoginLogoutRequested event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    
+    try {
+      final result = await _logoutUseCase(LogoutParams());
+      
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (_) => emit(LoginInitial()),
+      );
+    } catch (e) {
+      emit(LoginError(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+  
+  void _onResetRequested(
+    LoginResetRequested event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(LoginInitial());
+  }
+}
+```
+
+## MANDATORY: BLoC Independence Rules
+
+### BLoC Isolation Requirements
+- **BLoCs MUST be completely independent** of other BLoCs
+- **BLoCs MUST NOT contain other BLoCs** as dependencies
+- **BLoCs MUST NOT depend on other BLoCs** for their functionality
+- **BLoCs MUST only depend on UseCases** for business logic
+- **BLoCs MUST NOT communicate directly with other BLoCs**
+
+### ❌ FORBIDDEN: BLoC Dependencies
+```dart
+// ❌ WRONG: BLoC depending on another BLoC
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
+  final AuthBloc _authBloc; // ❌ FORBIDDEN: BLoC dependency
+  
+  UserProfileBloc(this._authBloc) : super(UserProfileInitial()) {
+    // ❌ WRONG: Listening to another BLoC
+    _authBloc.stream.listen((authState) {
+      // This creates tight coupling between BLoCs
+    });
+  }
+}
+
+// ❌ WRONG: BLoC containing another BLoC
+class MainBloc extends Bloc<MainEvent, MainState> {
+  final AuthBloc _authBloc; // ❌ FORBIDDEN: BLoC composition
+  final UserBloc _userBloc; // ❌ FORBIDDEN: BLoC composition
+  
+  MainBloc() : super(MainInitial()) {
+    _authBloc = AuthBloc(); // ❌ WRONG: Creating BLoCs inside BLoCs
+    _userBloc = UserBloc(); // ❌ WRONG: Creating BLoCs inside BLoCs
+  }
+}
+```
+
+### ✅ CORRECT: BLoC Independence
+```dart
+// ✅ CORRECT: BLoC depends only on UseCases
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
+  final GetUserProfileUseCase _getUserProfileUseCase;
+  final UpdateUserProfileUseCase _updateUserProfileUseCase;
+  
+  UserProfileBloc({
+    required GetUserProfileUseCase getUserProfileUseCase,
+    required UpdateUserProfileUseCase updateUserProfileUseCase,
+  })  : _getUserProfileUseCase = getUserProfileUseCase,
+        _updateUserProfileUseCase = updateUserProfileUseCase,
+        super(UserProfileInitial()) {
+    on<LoadUserProfile>(_onLoadUserProfile);
+    on<UpdateUserProfile>(_onUpdateUserProfile);
+  }
+  
+  Future<void> _onLoadUserProfile(
+    LoadUserProfile event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    emit(UserProfileLoading());
+    
+    final result = await _getUserProfileUseCase(GetUserProfileParams(
+      userId: event.userId,
+    ));
+    
+    result.fold(
+      (failure) => emit(UserProfileError(message: failure.message)),
+      (profile) => emit(UserProfileLoaded(profile: profile)),
+    );
+  }
+}
+```
+
+### ✅ CORRECT: Widget-Level BLoC Coordination
+```dart
+// ✅ CORRECT: Widget coordinates multiple BLoCs
+class MainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        BlocProvider<UserBloc>(create: (context) => sl<UserBloc>()),
+      ],
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, authState) {
+          // ✅ CORRECT: Widget coordinates BLoC interactions
+          if (authState is AuthAuthenticated) {
+            context.read<UserBloc>().add(LoadUser(userId: authState.user.id));
+          }
+        },
+        child: const MainContent(),
+      ),
+    );
+  }
+}
+```
+
+### BLoC Communication Patterns
+
+#### ✅ CORRECT: Event-Based Communication
+```dart
+// ✅ CORRECT: BLoCs communicate through events
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  void _onUserAuthenticated(
+    UserAuthenticated event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(AuthAuthenticated(user: event.user));
+    // ✅ CORRECT: Emit event that other BLoCs can listen to
+  }
+}
+
+class UserBloc extends Bloc<UserEvent, UserState> {
+  void _onAuthStateChanged(
+    AuthStateChanged event,
+    Emitter<UserState> emit,
+  ) {
+    // ✅ CORRECT: React to auth state changes
+    if (event.authState is AuthAuthenticated) {
+      add(LoadUser(userId: event.authState.user.id));
+    }
+  }
+}
+```
+
+#### ✅ CORRECT: Shared State Through Repository
+```dart
+// ✅ CORRECT: BLoCs share state through repository
+class SharedUserRepository {
+  UserEntity? _currentUser;
+  
+  UserEntity? get currentUser => _currentUser;
+  
+  void setCurrentUser(UserEntity user) {
+    _currentUser = user;
+  }
+}
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final SharedUserRepository _userRepository;
+  
+  void _onUserAuthenticated(
+    UserAuthenticated event,
+    Emitter<AuthState> emit,
+  ) {
+    _userRepository.setCurrentUser(event.user); // ✅ CORRECT: Update shared state
+    emit(AuthAuthenticated(user: event.user));
+  }
+}
+
+class UserBloc extends Bloc<UserEvent, UserState> {
+  final SharedUserRepository _userRepository;
+  
+  void _onLoadUser(LoadUser event, Emitter<UserState> emit) {
+    final user = _userRepository.currentUser; // ✅ CORRECT: Access shared state
+    if (user != null) {
+      emit(UserLoaded(user: user));
+    }
+  }
+}
+```
+
+## ❌ Violations
+- **Base event or state classes not declared as `sealed class`** (e.g., `abstract class LoginEvent`)
+- **Event or state subclasses not declared as `final class`** (e.g., `class LoginRequested`)
+- BLoC files combined into single file
+- BLoC files placed outside their own folder
+- Missing ErrorState in BLoC
+- Not using pattern matching with switch expressions
+- Not handling Either results from UseCases
+- **BLoCs depending on other BLoCs** (creates tight coupling)
+- **BLoCs containing other BLoCs** (violates single responsibility)
+- **BLoCs communicating directly with other BLoCs** (use events instead)
+- **Creating BLoCs inside other BLoCs** (use dependency injection)
+
+## ✅ Correct Examples
+```dart
+// ✅ CORRECT: Sealed classes with pattern matching
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return switch (state) {
+          LoginInitial() => const LoginForm(),
+          LoginLoading() => const CircularProgressIndicator(),
+          LoginSuccess(user: final user) => UserProfile(user: user),
+          LoginError(message: final error) => ErrorWidget(message: error),
+        };
+      },
+    );
+  }
+}
+```
+
+## 💡 Best Practices
+- Use sealed classes for exhaustive pattern matching
+- Use final classes for immutable events and states
+- Always include ErrorState in every BLoC
+- Handle Either results from UseCases properly
+- Use switch expressions for state handling
+- Keep events and states focused and minimal
+- Test all BLoC scenarios with unit tests
+
+- Use switch expressions for state handling
+- Keep events and states focused and minimal
+- Test all BLoC scenarios with unit tests

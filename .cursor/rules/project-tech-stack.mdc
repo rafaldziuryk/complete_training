@@ -1,0 +1,5 @@
+---
+globs: *.dart
+alwaysApply: true
+---
+This project is flutter and dart project

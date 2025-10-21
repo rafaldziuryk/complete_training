@@ -1,0 +1,477 @@
+---
+globs: *.dart
+alwaysApply: false
+---
+
+# Go Router Navigation Rules
+
+## Navigation Architecture Requirements
+
+### MANDATORY: Static Paths in Page Classes
+Every page class **MUST** have a static path constant:
+
+```dart
+class LoginScreen extends StatelessWidget {
+  // MANDATORY: Static path constant
+  static const String path = '/login';
+  
+  const LoginScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // ... widget implementation
+    );
+  }
+}
+```
+
+```dart
+class UserSettingsScreen extends StatelessWidget {
+  // MANDATORY: Static path constant
+  static const String path = '/user/:id/settings';
+  
+  const UserSettingsScreen({super.key, required this.id});
+
+  final String id;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // ... widget implementation
+    );
+  }
+}
+```
+
+### MANDATORY: Named Routes Only
+All navigation **MUST** use named routes:
+
+```dart
+// ✅ CORRECT - Named route
+context.goNamed('profile', extra: {'userId': 123});
+
+// ✅ CORRECT - Named route with parameters
+context.goNamed('user-settings', pathParameters: {'userId': userId});
+```
+
+### MANDATORY: Primitive Arguments Only
+**NEVER** pass objects via navigation. Use only primitive types:
+
+```dart
+// ✅ CORRECT - Primitive arguments only
+context.goNamed('user-edit', extra: {
+  'userName': userName,
+  'userEmail': userEmail,
+  'isAdmin': isAdmin,
+});
+
+// ❌ WRONG - Passing objects
+context.goNamed('user-edit', extra: userEntity); // Don't do this!
+```
+
+## Router Configuration Pattern
+
+### App Router Setup
+```dart
+// lib/core/routing/app_router.dart
+import 'package:go_router/go_router.dart';
+
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/home',
+  routes: [
+    GoRoute(
+      path: '/home',
+      name: 'home',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: LoginScreen.path,
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: ProfileScreen.path,
+      name: 'profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      path: UserSettingsScreen.path,
+      name: 'user-settings',
+      builder: (context, state) {
+        final userId = state.pathParameters['userId']!;
+        return SettingsScreen(userId: userId);
+      },
+    ),
+  ],
+);
+```
+
+### Page Classes with Static Paths
+```dart
+// lib/features/auth/presentation/pages/login_screen.dart
+class LoginScreen extends StatelessWidget {
+  static const String path = '/login';
+  
+  const LoginScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Column(
+        children: [
+          // ... form widgets
+          ElevatedButton(
+            onPressed: () {
+              // ✅ CORRECT - Named route with primitives
+              context.goNamed('home', extra: {
+                'isLoggedIn': true,
+                'userId': 123,
+              });
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// lib/features/profile/presentation/pages/profile_screen.dart
+class ProfileScreen extends StatelessWidget {
+  static const String path = '/profile';
+  
+  const ProfileScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // ✅ CORRECT - Named route with primitives
+              context.goNamed('user-settings', 
+                pathParameters: {'userId': userId},
+                extra: {
+                  'userName': userName,
+                  'userEmail': userEmail,
+                },
+              );
+            },
+            icon: const Icon(Icons.settings),
+          ),
+        ],
+      ),
+      body: const ProfileContent(),
+    );
+  }
+}
+```
+
+## Navigation Patterns
+
+### Parameter Passing
+```dart
+// ✅ CORRECT - Path parameters for IDs
+context.goNamed('user-edit', pathParameters: {'userId': userId});
+
+// ✅ CORRECT - Extra for primitive data
+context.goNamed('user-edit', extra: {
+  'userName': userName,
+  'userEmail': userEmail,
+  'isAdmin': isAdmin,
+  'lastLogin': lastLogin.toIso8601String(),
+});
+
+// ❌ WRONG - Passing objects
+context.goNamed('user-edit', extra: userEntity);
+```
+
+### Deep Linking Support
+```dart
+// lib/features/user/presentation/pages/user_detail_screen.dart
+class UserDetailScreen extends StatelessWidget {
+  static const String path = '/user/:userId';
+  
+  final String userId;
+  
+  const UserDetailScreen({super.key, required this.userId});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('User $userId')),
+      body: Column(
+        children: [
+          // ... user details
+          ElevatedButton(
+            onPressed: () {
+              // ✅ CORRECT - Named route with primitives
+              context.goNamed('user-settings', 
+                pathParameters: {'userId': userId},
+                extra: {
+                  'userName': userName,
+                  'userEmail': userEmail,
+                },
+              );
+            },
+            child: const Text('Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Error Handling
+```dart
+// lib/core/routing/app_router.dart
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/home',
+  errorBuilder: (context, state) => const ErrorScreen(),
+  routes: [
+    // ... routes
+  ],
+);
+
+// lib/core/presentation/pages/error_screen.dart
+class ErrorScreen extends StatelessWidget {
+  static const String path = '/error';
+  
+  const ErrorScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Error')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text('Page not found'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // ✅ CORRECT - Named route back to home
+                context.goNamed('home');
+              },
+              child: const Text('Go Home'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Common Mistakes to Avoid
+
+### ❌ Wrong Patterns
+```dart
+// ❌ WRONG - No static path
+class LoginScreen extends StatelessWidget {
+  // Missing static path!
+  const LoginScreen({super.key});
+}
+
+// ❌ WRONG - Passing objects
+context.goNamed('profile', extra: userEntity);
+
+// ❌ WRONG - Using direct paths instead of named routes
+context.go('/profile');
+
+// ❌ WRONG - Dynamic paths without parameters
+context.goNamed('user-profile', pathParameters: {'userId': user.id}); // Should use proper route names
+```
+
+### ✅ Correct Patterns
+```dart
+// ✅ CORRECT - Static path
+class LoginScreen extends StatelessWidget {
+  static const String path = '/login';
+  const LoginScreen({super.key});
+}
+
+// ✅ CORRECT - Primitive arguments only
+context.goNamed('user-profile', 
+  pathParameters: {'userId': userId},
+  extra: {
+    'userName': userName,
+    'userEmail': userEmail,
+  },
+);
+
+// ✅ CORRECT - Named route
+context.goNamed('profile');
+
+// ✅ CORRECT - Path parameters
+context.goNamed('user-settings', pathParameters: {'userId': userId});
+```
+
+## File Organization
+
+### Router Files Structure
+```
+lib/core/routing/
+├── app_router.dart          # Main router configuration
+├── route_paths.dart         # Centralized path constants
+└── navigation_utils.dart    # Navigation helper functions
+```
+
+### Page Files Structure
+```
+lib/features/[feature]/presentation/pages/
+├── [feature]_screen.dart    # Main screen with static path
+├── [feature]_detail_screen.dart
+└── [feature]_edit_screen.dart
+```
+
+## Testing Navigation
+
+### Navigation Testing Pattern
+```dart
+// test/features/auth/presentation/pages/login_screen_test.dart
+testWidgets('should navigate to home on successful login', (tester) async {
+  await tester.pumpWidget(
+    MaterialApp.router(
+      routerConfig: appRouter,
+      builder: (context, child) => child!,
+    ),
+  );
+  
+  // Navigate to login
+  await tester.tap(find.text('Login'));
+  await tester.pumpAndSettle();
+  
+  // Verify on login screen
+  expect(find.text('Login'), findsOneWidget);
+  
+  // Perform login action
+  await tester.tap(find.text('Submit'));
+  await tester.pumpAndSettle();
+  
+  // Verify navigation to home
+  expect(find.text('Home'), findsOneWidget);
+});
+```
+
+## Migration Checklist
+
+When implementing go_router navigation:
+
+- ✅ Add static path constant to every page class
+- ✅ Use named routes (context.goNamed) instead of direct paths
+- ✅ Pass only primitive arguments via extra parameter
+- ✅ Use path parameters for IDs and dynamic values
+- ✅ Update router configuration with all routes and names
+- ✅ Add error handling for invalid routes
+- ✅ Test navigation flows
+- ✅ Update deep linking support
+- ✅ Document route names for team reference
+
+- ✅ Test navigation flows
+- ✅ Update deep linking support
+- ✅ Document route paths for team reference
+
+## ❌ **BLoC Independence Rule Violation Found!**
+
+### **Violation Details:**
+
+**File:** `lib/features/qr_scanner/presentation/bloc/qr_scanner_bloc.dart`
+
+**❌ VIOLATION:**
+```dart
+class QrScannerBloc extends Bloc<QrScannerEvent, QrScannerState> {
+  final CardRepository _cardRepository;
+  final AuthBloc _authBloc; // ❌ FORBIDDEN: BLoC depending on another BLoC
+  
+  QrScannerBloc(this._cardRepository, this._authBloc) // ❌ WRONG: BLoC dependency
+```
+
+**❌ VIOLATION in DI Module:**
+```dart
+// lib/features/qr_scanner/di/qr_scanner_module.dart
+sl.registerFactory(
+  () => QrScannerBloc(
+    sl<CardRepository>(),
+    sl<AuthBloc>(), // ❌ FORBIDDEN: Injecting BLoC into another BLoC
+  ),
+);
+```
+
+### **What's Wrong:**
+1. **QrScannerBloc depends on AuthBloc** - This violates the independence rule
+2. **Direct BLoC-to-BLoC dependency** - Creates tight coupling
+3. **BLoC accessing another BLoC's state** - `_authBloc.state`
+4. **DI registration includes BLoC dependency** - Wrong pattern
+
+### **How to Fix:**
+
+#### **✅ CORRECT: Use UseCase Instead**
+```dart
+class QrScannerBloc extends Bloc<QrScannerEvent, QrScannerState> {
+  final CardRepository _cardRepository;
+  final GetCurrentUserUseCase _getCurrentUserUseCase; // ✅ CORRECT: UseCase dependency
+  
+  QrScannerBloc({
+    required CardRepository cardRepository,
+    required GetCurrentUserUseCase getCurrentUserUseCase,
+  }) : _cardRepository = cardRepository,
+       _getCurrentUserUseCase = getCurrentUserUseCase,
+       super(QrScannerInitial()) {
+    // ... event handlers
+  }
+  
+  Future<void> _onStartQrScanning(
+    StartQrScanning event, 
+    Emitter<QrScannerState> emit
+  ) async {
+    // ✅ CORRECT: Get user through UseCase
+    final userResult = await _getCurrentUserUseCase(const NoParams());
+    
+    if (userResult.isSuccess && userResult.data != null) {
+      final user = userResult.data!;
+      final initialCardsResult = await _cardRepository.getAllCardsForUser(user.id);
+      // ... rest of logic
+    } else {
+      emit(const QrScannerError('User not authenticated.'));
+    }
+  }
+}
+```
+
+#### **✅ CORRECT: Updated DI Registration**
+```dart
+// lib/features/qr_scanner/di/qr_scanner_module.dart
+void setupQrScannerModule(GetIt sl) {
+  sl.registerFactory<QrScannerBloc>(() => QrScannerBloc(
+    cardRepository: sl<CardRepository>(),
+    getCurrentUserUseCase: sl<GetCurrentUserUseCase>(), // ✅ CORRECT: UseCase
+  ));
+}
+```
+
+## ✅ **Good News: Other BLoCs Follow the Rule**
+
+All other BLoCs in the codebase correctly follow the independence rule:
+
+- ✅ **AuthBloc** - Only depends on UseCases
+- ✅ **ProfileBloc** - Only depends on UseCases  
+- ✅ **CompanyBloc** - Only depends on UseCases
+- ✅ **CardBloc** - Only depends on UseCases
+- ✅ **RewardBloc** - Only depends on UseCases
+- ✅ **StampBloc** - Only depends on Services
+
+## **Summary:**
+- **❌ 1 Violation Found:** QrScannerBloc depends on AuthBloc
+- **✅ All Other BLoCs:** Follow the independence rule correctly
+- **🔧 Fix Required:** Refactor QrScannerBloc to use GetCurrentUserUseCase instead of AuthBloc
+
+The codebase is mostly compliant with the new rule, with only one clear violation that needs to be fixed! 🎯

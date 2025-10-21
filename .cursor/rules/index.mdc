@@ -1,0 +1,112 @@
+# Flutter Clean Architecture - Complete Rules Index
+
+## 📋 Overview
+This directory contains all Clean Architecture rules divided into specific, focused components. Each rule file addresses a specific aspect of Clean Architecture implementation.
+
+## 📁 Rule Files
+
+### 1. [folder-structure.mdc](folder-structure.mdc)
+**Folder Structure and Organization**
+- Expected folder structure for Clean Architecture
+- Feature organization requirements
+- Layer separation guidelines
+- File naming conventions
+- Directory structure validation
+
+### 2. [usecase-pattern.mdc](usecase-pattern.mdc)
+**UseCase Pattern Implementation**
+- Base UseCase class requirements
+- UseCase implementation patterns
+- Error handling with **sealed UseCaseResult** pattern (no Either allowed)
+- Params classes structure
+- Input validation requirements
+
+### 3. [bloc-sealed-classes.mdc](bloc-sealed-classes.mdc)
+**BLoC with Sealed Classes Pattern**
+- BLoC file organization
+- Sealed classes for events and states
+- Final classes for specific events/states
+- Pattern matching implementation
+- Error state requirements
+- **BLoC independence rules** (no BLoC dependencies)
+- **BLoC isolation requirements** (only depend on UseCases)
+
+### 4. [widget-state-management.mdc](widget-state-management.mdc)
+**Widget State Management Rules**
+- Business data restrictions in widgets
+- UI-specific state allowances
+- BLoC state usage patterns
+- Business logic restrictions
+- Widget interaction patterns
+
+### 5. [dependency-injection.mdc](dependency-injection.mdc)
+**Dependency Injection Rules**
+- get_it framework requirements
+- Registration types (singleton vs factory)
+- Registration order requirements
+- Service locator pattern
+- BLoC factory registration
+
+### 6. [layer-dependencies.mdc](layer-dependencies.mdc)
+**Layer Dependencies and Boundaries**
+- Clean Architecture dependency flow
+- Allowed vs forbidden dependencies
+- Import organization
+- Layer separation enforcement
+- Dependency injection compliance
+
+## 🔄 Usage
+
+### For New Features
+1. **Start with folder-structure.mdc** - Set up proper directory structure
+2. **Follow usecase-pattern.mdc** - Implement business logic (must use sealed UseCaseResult)
+3. **Use bloc-sealed-classes.mdc** - Create state management
+4. **Apply widget-state-management.mdc** - Build UI components
+5. **Configure dependency-injection.mdc** - Set up DI
+6. **Verify layer-dependencies.mdc** - Ensure clean boundaries
+
+### For Code Review
+- Check each rule file against the implementation
+- Verify compliance with all patterns
+- Ensure no violations of layer dependencies
+- Confirm proper DI registration
+
+### For Refactoring
+- Use specific rule files to identify violations
+- Apply focused fixes based on rule requirements
+- Maintain clean architecture principles
+
+## ⚠️ Critical Requirements
+
+### MANDATORY: All Rules Must Be Followed
+- **No exceptions** to Clean Architecture patterns
+- **All features** must follow the complete rule set
+- **Consistent implementation** across the entire project
+- **Regular validation** against all rule files
+
+### Common Violations to Avoid
+- ❌ Business logic in widgets
+- ❌ Wrong DI registration types
+- ❌ Layer dependency violations
+- ❌ Missing sealed classes in BLoC
+- ❌ Improper folder structure
+- ❌ UseCase pattern violations (must use sealed UseCaseResult, not Either)
+
+## 📚 Related Rules
+- [dependency-injection-architecture.mdc](../dependency-injection-architecture.mdc)
+- [error-handling-patterns.mdc](../error-handling-patterns.mdc)
+- [code-organization-best-practices.mdc](../code-organization-best-practices.mdc)
+- [widget-organization.mdc](../widget-organization.mdc)
+
+## 🎯 Success Criteria
+- ✅ Clean separation of concerns
+- ✅ Testable architecture
+- ✅ Maintainable codebase
+- ✅ Scalable feature development
+- ✅ Consistent patterns across features
+- ✅ Proper error handling (sealed UseCaseResult)
+- ✅ Efficient state management
+
+- ✅ Consistent patterns across features
+- ✅ Proper error handling
+- ✅ Efficient state management
