@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dart_l4_patterns" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-    <option name="filePath" value="$PROJECT_DIR$/packages/dart/l4_patterns/bin/l4_patterns.dart" />
-    <method v="2" />
-  </configuration>
-</component>

@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-    <configuration name="local_storage_l5" factoryName="Flutter" type="FlutterRunConfigurationType">
-        <option name="filePath"
-            value="/Users/rafaldziuryk/SupportStudioProjects/complete_training/packages/local_storage/local_storage_l5/lib/main.dart" />
-        <option name="buildFlavor" value="" />
-        <method v="2" />
-    </configuration>
-</component>

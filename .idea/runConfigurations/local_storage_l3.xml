@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="local_storage_l3" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="filePath" value="$PROJECT_DIR$/packages/local_storage/local_storage_l3/lib/main.dart" />
-    <method v="2" />
-  </configuration>
-</component>

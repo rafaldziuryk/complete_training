@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="flavors_l2" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="additionalArgs" value="--dart-define=ENVIRONMENT=dev --dart-define=API_BASE_URL=https://api-dev.example.com --dart-define=ENABLE_LOGGING=true --dart-define=DEBUG_MENU_ENABLED=true" />
-    <option name="filePath" value="$PROJECT_DIR$/packages/flavors/lesson2_dart_define/lib/main.dart" />
-    <method v="2" />
-  </configuration>
-</component>

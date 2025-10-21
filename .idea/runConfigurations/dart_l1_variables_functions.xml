@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dart_l1_variables_functions" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-    <option name="filePath" value="$PROJECT_DIR$/packages/dart/l1_variables_functions/bin/l1_variables_functions.dart" />
-    <method v="2" />
-  </configuration>
-</component>
