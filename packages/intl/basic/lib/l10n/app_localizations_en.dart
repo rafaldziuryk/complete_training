@@ -5,8 +5,8 @@ import 'app_localizations.dart';
 // ignore_for_file: type=lint
 
 /// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+class SEn extends S {
+  SEn([String locale = 'en']) : super(locale);
 
   @override
   String get appName => 'Application';
@@ -16,4 +16,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentLanguage => 'Current Language:';
+
+  @override
+  String get polish => 'polish';
+
+  @override
+  String get english => 'english';
 }

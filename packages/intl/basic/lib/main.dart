@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'l10n/app_localizations.dart';
+import 'generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -14,7 +14,6 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 
   static _MyAppState? of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>();
-
 }
 
 class _MyAppState extends State<MyApp> {
@@ -22,6 +21,7 @@ class _MyAppState extends State<MyApp> {
 
   void changeLanguage(Locale? locale) {
     setState(() {
+      print('rfl cl');
       overrideLocale = locale;
     });
   }
@@ -34,12 +34,10 @@ class _MyAppState extends State<MyApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
-        AppLocalizations.delegate,
+        S.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      supportedLocales: S.delegate.supportedLocales,
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: Builder(builder: (context) => MyHomePage()),
       locale: overrideLocale,
     );
@@ -56,7 +54,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -67,25 +64,30 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appName),
+        title: Text(S.of(context).appName),
         actions: [
           // Polish language button
-          IconButton(
-            onPressed: () => MyApp.of(context)?.changeLanguage(const Locale('pl')),
-            icon: const Text('PL'),
-            tooltip: 'Polski',
+          Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () => MyApp.of(context)?.changeLanguage(const Locale('pl')),
+                icon: Text(S.of(context).polish),
+              );
+            },
           ),
           // English language button
-          IconButton(
-            onPressed: () => MyApp.of(context)?.changeLanguage(const Locale('en')),
-            icon: const Text('EN'),
-            tooltip: 'English',
+          Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () => MyApp.of(context)?.changeLanguage(const Locale('en')),
+                icon: Text(S.of(context).english),
+              );
+            },
           ),
           // Reset to system language
           IconButton(
             onPressed: () => MyApp.of(context)?.changeLanguage(null),
             icon: const Icon(Icons.language),
-            tooltip: 'System Language',
           ),
         ],
       ),
@@ -100,28 +102,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.currentLanguage,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(S.of(context).currentLanguage),
                     const SizedBox(height: 8),
                     Text(
-                      MyApp.of(context)?.overrideLocale?.languageCode ?? 'System (${Localizations.localeOf(context).languageCode})',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
+                      MyApp.of(context)?.overrideLocale?.languageCode ??
+                          'System (${Localizations.localeOf(context).languageCode})',
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Text(AppLocalizations.of(context)!.incrementLabel),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            Text(S.of(context).incrementLabel),
+            Text('$_counter', style: Theme.of(context).textTheme.bodyLarge),
           ],
         ),
       ),
