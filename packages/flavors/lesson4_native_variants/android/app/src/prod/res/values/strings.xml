@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Flavors Demo</string>
-    <string name="environment">Production</string>
-    <string name="api_url">https://api.example.com</string>
-</resources>
