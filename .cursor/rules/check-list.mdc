@@ -1,0 +1,135 @@
+---
+globs: *.dart
+alwaysApply: false
+---
+
+# Implementation Checklist - Cursor Rules Compliance
+
+## MANDATORY: Pre-Implementation Phase
+
+### Step 1: Read All Rules First
+**CRITICAL**: Before writing ANY code, read and understand ALL Cursor Rules:
+- [ ] flutter-clean-architecture.mdc
+- [ ] dependency-injection-architecture.mdc  
+- [ ] error-handling-patterns.mdc
+- [ ] code-organization-best-practices.mdc
+- [ ] widget-organization.mdc
+- [ ] alert-dialog-organization.mdc
+- [ ] go-router-navigation.mdc
+- [ ] absolute-import-path.mdc
+
+### Step 2: Create Implementation Plan
+- [ ] Map out required files and folders structure
+- [ ] Plan DI registration order
+- [ ] Design BLoC events and states
+- [ ] Plan widget organization
+- [ ] Design error handling strategy
+
+## MANDATORY: Implementation Phase Checklist
+
+### Domain Layer Implementation
+- [ ] Create entities with proper annotations (Hive, Equatable)
+- [ ] Create repositories interfaces
+- [ ] Create use cases with sealed UseCaseResult pattern
+- [ ] Create failure classes hierarchy
+- [ ] Create exception classes hierarchy
+
+### Data Layer Implementation  
+- [ ] Create repository implementations
+- [ ] Add proper error handling with try-catch
+- [ ] Transform external exceptions to domain exceptions
+- [ ] Add meaningful error messages
+
+### Presentation Layer Implementation
+
+#### BLoC Structure (MANDATORY)
+- [ ] Create separate files: `*_bloc.dart`, `*_event.dart`, `*_state.dart`
+- [ ] Use `sealed class` for base event/state classes
+- [ ] Use `final class` for specific events/states
+- [ ] Include ErrorState in every BLoC
+- [ ] Wrap UseCase calls in try-catch
+- [ ] Handle UseCaseResult results
+
+#### Widget Organization
+- [ ] Split large widgets (>200 lines) into smaller components
+- [ ] Create separate files for reusable widgets
+- [ ] Use descriptive widget names ending with `Widget`
+- [ ] Place widgets in appropriate `widgets/` directories
+- [ ] Extract dialogs to separate files ending with `_dialog.dart`
+
+#### Navigation
+- [ ] Add static path constants to every page class
+- [ ] Use named transitions (context.go)
+- [ ] Pass only primitive arguments via extra parameter
+- [ ] Use path parameters for IDs and dynamic values
+
+### Dependency Injection
+- [ ] Register data sources as `registerLazySingleton`
+- [ ] Register repositories as `registerLazySingleton`
+- [ ] Register services as `registerLazySingleton`
+- [ ] Register use cases as `registerLazySingleton`
+- [ ] Register BLoCs as `registerFactory` (CRITICAL!)
+- [ ] Follow registration order: data sources → repositories → services → use cases → BLoCs
+- [ ] Update DI module after creating ANY non-page/non-widget file
+
+### Export Files (MANDATORY)
+- [ ] Create feature export file (`[feature]_exports.dart`)
+- [ ] Create layer-specific export files if applicable
+- [ ] Update core export file if it's a core module
+- [ ] Update exports IMMEDIATELY after creating any file
+
+## MANDATORY: Post-Implementation Verification
+
+### Code Quality Checks
+- [ ] Run `flutter analyze` - must pass with no issues
+- [ ] Check all imports use absolute paths
+- [ ] Verify file sizes are within limits (screens <500 lines, widgets <200 lines)
+- [ ] Ensure no business logic in widgets
+- [ ] Verify all BLoCs use sealed classes
+- [ ] Check error handling patterns are implemented
+
+### Architecture Compliance
+- [ ] Verify clean architecture layers separation
+- [ ] Check presentation layer depends only on domain
+- [ ] Verify DI registration types are correct
+- [ ] Ensure export files are complete and up-to-date
+- [ ] Check widget organization follows rules
+
+## Common Mistakes to Avoid
+
+### ❌ Implementation Anti-Patterns
+- [ ] Starting coding before reading all rules
+- [ ] Combining BLoC files into single file
+- [ ] Using `abstract class` instead of `sealed class`
+- [ ] Using `class` instead of `final class` for events/states
+- [ ] Registering BLoCs as singletons instead of factories
+- [ ] Creating files without updating exports
+- [ ] Putting business logic in widgets
+- [ ] Using setState for business data
+- [ ] UseCase returning Either instead of UseCaseResult
+
+### ✅ Correct Implementation Patterns
+- [ ] Read all rules before implementation
+- [ ] Use sealed classes for BLoC events/states
+- [ ] Use final classes for specific events/states
+- [ ] Register BLoCs as factories
+- [ ] Update exports immediately after file creation
+- [ ] Keep business logic in BLoCs and UseCases
+- [ ] Use setState only for UI-specific state
+- [ ] UseCase returns sealed UseCaseResult
+
+## Emergency Fix Protocol
+
+If you realize you've violated rules during implementation:
+
+1. **STOP** current implementation
+2. **READ** the violated rule completely
+3. **REFACTOR** code to comply with the rule
+4. **VERIFY** compliance with checklist
+5. **CONTINUE** only after full compliance
+
+**REMEMBER**: It's better to spend 30 minutes reading rules than 3 hours refactoring code that violates them!
+
+5. **CONTINUE** only after full compliance
+
+**REMEMBER**: It's better to spend 30 minutes reading rules than 3 hours refactoring code that violates them!
