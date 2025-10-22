@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Staging colors -->
-    <color name="primary_color">#FF9800</color>
-    <color name="primary_dark">#F57C00</color>
-    <color name="accent">#FFC107</color>
-</resources>
