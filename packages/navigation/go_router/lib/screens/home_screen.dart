@@ -16,30 +16,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Go Router Navigation Examples',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            
-            // Basic navigation
-            _buildSectionTitle('Basic Navigation'),
-            _buildNavigationButton(
-              context,
-              'Profile Screen',
-              Icons.person,
-              () => context.goNamed('profile'),
-            ),
-            _buildNavigationButton(
-              context,
-              'Settings Screen',
-              Icons.settings,
-              () => context.goNamed('settings'),
-            ),
-            
-            const SizedBox(height: 20),
-            
             // Path parameters
             _buildSectionTitle('Path Parameters'),
             _buildNavigationButton(
@@ -54,24 +30,7 @@ class HomeScreen extends StatelessWidget {
               Icons.account_circle,
               () => context.goNamed('user-detail', pathParameters: {'userId': '456'}),
             ),
-            
-            const SizedBox(height: 20),
-            
-            // Query parameters
-            _buildSectionTitle('Query Parameters'),
-            _buildNavigationButton(
-              context,
-              'Profile with Query Params',
-              Icons.query_stats,
-              () => context.goNamed('profile', queryParameters: {
-                'name': 'John Doe',
-                'age': '25',
-                'city': 'Warsaw',
-              }),
-            ),
-            
-            const SizedBox(height: 20),
-            
+
             // Nested routes
             _buildSectionTitle('Nested Routes'),
             _buildNavigationButton(
@@ -79,17 +38,6 @@ class HomeScreen extends StatelessWidget {
               'Nested Example',
               Icons.folder,
               () => context.goNamed('nested'),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Protected routes
-            _buildSectionTitle('Protected Routes'),
-            _buildNavigationButton(
-              context,
-              'Protected Screen',
-              Icons.lock,
-              () => context.goNamed('protected'),
             ),
           ],
         ),
@@ -130,6 +78,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
 
 
 

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_router_demo/screens/home_screen.dart';
-import 'package:go_router_demo/screens/profile_screen.dart';
-import 'package:go_router_demo/screens/settings_screen.dart';
 import 'package:go_router_demo/screens/user_detail_screen.dart';
 import 'package:go_router_demo/screens/user_edit_screen.dart';
 import 'package:go_router_demo/screens/nested_example_screen.dart';
 import 'package:go_router_demo/screens/nested_tab1_screen.dart';
 import 'package:go_router_demo/screens/nested_tab2_screen.dart';
-import 'package:go_router_demo/screens/protected_screen.dart';
 import 'package:go_router_demo/screens/login_screen.dart';
 import 'package:go_router_demo/screens/error_screen.dart';
 
+bool isLoggedIn = false; // Symulacja - zawsze false dla demonstracji
 // Global router instance
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -24,9 +22,9 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) {
     // Przykład: przekierowanie do logowania jeśli użytkownik nie jest zalogowany
     // W prawdziwej aplikacji sprawdzalibyśmy stan autoryzacji
-    const isLoggedIn = false; // Symulacja - zawsze false dla demonstracji
+
     final isLoggingIn = state.matchedLocation == '/login';
-    
+
     if (!isLoggedIn && !isLoggingIn) {
       return '/login';
     }
@@ -49,20 +47,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoginScreen(),
     ),
     
-    // Profile route
-    GoRoute(
-      path: '/profile',
-      name: 'profile',
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    
-    // Settings route
-    GoRoute(
-      path: '/settings',
-      name: 'settings',
-      builder: (context, state) => const SettingsScreen(),
-    ),
-    
     // User detail route with path parameter
     GoRoute(
       path: '/user/:userId',
@@ -83,14 +67,7 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
-    
-    // Protected route (wymaga autoryzacji)
-    GoRoute(
-      path: '/protected',
-      name: 'protected',
-      builder: (context, state) => const ProtectedScreen(),
-    ),
-    
+
     // Nested routes example
     GoRoute(
       path: '/nested',
