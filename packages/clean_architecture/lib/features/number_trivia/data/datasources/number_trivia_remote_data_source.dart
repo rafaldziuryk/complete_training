@@ -21,7 +21,7 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
       
       if (response.statusCode == 200) {
         return NumberTriviaModel.fromJson({
-          'text': response.data,
+          'text': response.data['text'],
           'number': number,
         });
       } else {
@@ -46,8 +46,8 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
       
       if (response.statusCode == 200) {
         return NumberTriviaModel.fromJson({
-          'text': response.data,
-          'number': 0, // Random number trivia doesn't have a specific number
+          'text': response.data['text'],
+          'number': response.data['number'], // Random number trivia doesn't have a specific number
         });
       } else {
         throw const ServerException('Failed to load random number trivia');
