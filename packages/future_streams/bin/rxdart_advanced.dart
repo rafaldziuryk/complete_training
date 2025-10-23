@@ -12,7 +12,6 @@ Future<void> advancedExamples() async {
   await withLatestFrom();
   await startWith();
   await retryWhen();
-  await timeoutWithFallback();
   await backpressure();
 }
 
@@ -88,29 +87,6 @@ Future<void> retryWhen() async {
   await Future.delayed(Duration(milliseconds: 1000));
 }
 
-Future<void> timeoutWithFallback() async {
-  print('\n5. TimeoutWithFallback:');
-  print('   - Zastępuje stream innym gdy przekroczy timeout');
-  
-  final slowStream = Stream.periodic(Duration(milliseconds: 200), (i) => 'Slow $i').take(10);
-  final fallbackStream = Stream.value('Fallback - timeout!');
-  
-  slowStream
-      .timeout(Duration(milliseconds: 500))
-      .listen(
-        (value) => print('     $value'),
-        onError: (error) {
-          if (error is TimeoutException) {
-            fallbackStream.listen((value) => print('     $value'));
-          } else {
-            print('     Błąd: $error');
-          }
-        },
-      );
-  
-  await Future.delayed(Duration(milliseconds: 1000));
-}
-
 Future<void> backpressure() async {
   print('\n6. Backpressure:');
   print('   - Kontroluje przepływ danych gdy producent jest szybszy od konsumenta');
@@ -125,7 +101,7 @@ Future<void> backpressure() async {
   });
   
   // Symuluj wolny konsument
-  await Future.delayed(Duration(milliseconds: 200));
+  await Future.delayed(Duration(milliseconds: 500));
   subscription.pause();
   
   print('\n   Z backpressure (throttle co 200ms):');
